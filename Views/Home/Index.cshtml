@@ -172,6 +172,7 @@
                                 orderItems = [];
                                 $('#orderNo').val('');
                                 $('#orderDate').val('');
+                                $('#description').val('');
                                 $('#orderItems').empty();
                             } else {
                                 alert('Failed')
@@ -192,7 +193,7 @@
                     var $tbody = $('<tbody/>');
                     $.each(orderItems, function (i,val) {
                         var $row = $('<tr/>');
-                        $row.append($('<td/>').html(val.itemName));
+                        $row.append($('<td/>').html(val.ItemName));
                         $row.append($('<td/>').html(val.Quantity));
                         $row.append($('<td/>').html(val.Rate));
                         $row.append($('<td/>').html(val.Total));

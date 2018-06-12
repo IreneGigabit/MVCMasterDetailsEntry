@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MVCMasterDetailsEntry
+namespace MVCMasterDetailsEntry.Models
 {
     using System;
     using System.Data.Entity;
