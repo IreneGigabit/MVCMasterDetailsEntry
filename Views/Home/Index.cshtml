@@ -2,3 +2,29 @@
     ViewBag.Title = "Create";
 }
 @Html.ActionLink("建立訂單", "Create", "Home")
+@Html.ActionLink("取得清單1", "GetOrders", "Home",new {target="_blank" })
+<a id="getall" href="javascript:void(0)">取得清單2</a>
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $("#getall").click(function () {
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/GetOrders",
+                    data: $('#popupForm').serialize(),
+                    success: function (data) {
+                        console.log(data);
+                        alert("success");
+                    },
+                    error: function () {
+                        alert("fail");
+                    }
+                })
+            });
+
+        });
+
+    </script>
+}

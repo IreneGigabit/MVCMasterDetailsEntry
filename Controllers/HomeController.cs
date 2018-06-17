@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Transactions;
+using Newtonsoft.Json;
 
 namespace MVCMasterDetailsEntry.Controllers
 {
@@ -17,12 +18,27 @@ namespace MVCMasterDetailsEntry.Controllers
         {
             return View();
         }
+        public ActionResult GetOrders() {
+            using (MyDatabaseEntities db = new MyDatabaseEntities()) {
+                var result = db.Orders
+                            .OrderBy(a => a.OrderID)
+                            .Select(o => new
+                            {
+                                ID = o.OrderID,
+                                No = o.OrderNo,
+                                Date = o.OrderDate,
+                                OrderDetails = o.OrderDetails.Select(d => new { itemName = d.ItemName, qty = d.Quantity, rate = d.Rate })
+                            })
+                            .ToList();
+                return Content(JsonConvert.SerializeObject(result), "application/json");
+            }
+        }
 
         public ActionResult Create() {
             return View();
         }
 
-        //Post action for Save data to database
+        #region 新增存檔[Post] +JsonResult SaveOrder(OrderVM O)
         [HttpPost]
         public JsonResult SaveOrder(OrderVM O) {
             bool status = false;
@@ -55,5 +71,6 @@ namespace MVCMasterDetailsEntry.Controllers
 
             return new JsonResult { Data = new { status = status } };
         }
+        #endregion
     }
 }
