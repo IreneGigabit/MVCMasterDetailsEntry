@@ -1,0 +1,24 @@
+﻿@model MVCMasterDetailsEntry.Models.Order
+@{
+    ViewBag.Title = "Modify";
+}
+
+<h2>Modify</h2>
+@using (Html.BeginForm("Modify","Home",FormMethod.Post)) {
+    <table>
+        <tr>
+        <td>
+        @Html.EditorFor(a => a.OrderID)
+        </td>
+        </tr>
+        @foreach (var i in Model.OrderDetails) {
+            <tr>
+                <td>@Html.EditorFor(item => i.OrderItemsID)</td>
+                <td>@Html.EditorFor(item => i.ItemName)</td>
+                <td>@Html.EditorFor(item => i.Quantity)</td>
+                <td>@Html.EditorFor(item => i.Rate)</td>
+                <td>@Html.EditorFor(item => i.TotalAmount)</td>
+            </tr>
+        }
+    </table>
+}

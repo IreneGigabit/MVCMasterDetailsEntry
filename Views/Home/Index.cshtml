@@ -1,30 +1,107 @@
 ﻿@{
-    ViewBag.Title = "Create";
+    ViewBag.Title = "Index";
 }
 @Html.ActionLink("建立訂單", "Create", "Home")
-@Html.ActionLink("取得清單1", "GetOrders", "Home",new {target="_blank" })
-<a id="getall" href="javascript:void(0)">取得清單2</a>
+@Html.ActionLink("取得清單(openWin)", "GetOrders", "Home",new {target="_blank" })
+<a id="getall" href="javascript:void(0)">取得清單</a>
 
+<table id="orderlist">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Order No</th>
+            <th>Order Date</th>
+            <th>Order Description</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody id="listH">
 
+    </tbody>
+</table>
 @section Scripts{
     <script>
         $(document).ready(function () {
-            $("#getall").click(function () {
-                $.ajax({
-                    type: "POST",
-                    url: "/Home/GetOrders",
-                    data: $('#popupForm').serialize(),
-                    success: function (data) {
-                        console.log(data);
-                        alert("success");
-                    },
-                    error: function () {
-                        alert("fail");
-                    }
-                })
-            });
-
+            $("#getall").click();
         });
 
+        //#region 取得清單
+        $("#getall").click(function () {
+            $.ajax({
+                type: "POST",
+                url: "/Home/GetOrders",
+                data: $('#popupForm').serialize(),
+                success: function (data) {
+                    $("#orderlist tr:gt(0)").remove();
+                    $.each(data, function (i, item) {
+                        //master
+                        var dd = new Date(item.Date);
+                        var headRow = "<tr>" +
+                                    "<td>" + item.ID + "</td>" +
+                                    "<td>" + item.No + "</td>" +
+                                    "<td>" + dd.getFullYear() + '/' + (dd.getMonth() + 1) + '/' + dd.getDate() + "</td>" +
+                                    "<td>" + item.Description + "</td>" +
+                                    "<td>" +
+                                    "<a name='toggle' lineIdx='" + i + "' href='javascript:void(0)'>[Toggle]</a>&nbsp;" +
+                                    "<a href='javascript:modify(" + item.ID + ")'>[Modify]</a>&nbsp;" +
+                                    "</td>" +
+                                    "</tr>";
+                        $(headRow).appendTo($("#listH"));
+                        //detail
+                        var detailRow = "<tr id='listD" + i + "' style='display:none'><td colspan=5 ><table width=70% align=right>";
+                        $.each(item.OrderDetails, function (d, dItem) {
+                            if (d == 0) {
+                                detailRow += "<th rowspan='" + (item.OrderDetails.length + 1) + "'>Detail</th>";
+                                detailRow += "<th " + item.OrderDetails.length + ">itemName</th>";
+                                detailRow += "<th " + item.OrderDetails.length + ">qty</th>";
+                                detailRow += "<th " + item.OrderDetails.length + ">rate</th>";
+                                detailRow += "<th " + item.OrderDetails.length + ">TotalAmount</th>";
+                            }
+                            detailRow += "<tr>";
+                            detailRow += "<td>" + dItem.itemName + "</td>";
+                            detailRow += "<td>" + dItem.qty + "</td>";
+                            detailRow += "<td>" + dItem.rate + "</td>";
+                            detailRow += "<td>" + dItem.TotalAmount + "</td>";
+                            detailRow += "</tr>";
+                        });
+                        detailRow += "</table></td></tr>";
+                        $("#listH>tr:last").after($(detailRow));
+                    });
+                },
+                error: function () {
+                    alert("fail");
+                }
+            })
+        });
+        //#endregion
+
+        //#region [Toggle]按鈕
+        $(document).on("click", '[name=toggle]', function () {
+            $("[id^=listD]:not(#listD" + $(this).attr("lineIdx") + ")").hide();
+            $("#listD" + $(this).attr("lineIdx")).toggle();
+        });
+        //#endregion
+
+        //#region [Modify]按鈕
+        function modify(id) {
+            window.location = "/Home/Modify/" + id;
+        }
+        //#endregion
     </script>
 }
+
+<style>
+    #orderlist {
+        width: 100%;
+        border-collapse: collapse;
+        border-top: 1px solid #BFAEAE;
+        border-right: 1px solid #BFAEAE;
+    }
+
+    #orderlist th, #orderlist td {
+        text-align: left;
+        border-left: 1px solid #BFAEAE;
+        padding: 5px;
+        border-bottom: 1px solid #BFAEAE;
+    }
+</style>
