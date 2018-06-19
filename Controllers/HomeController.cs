@@ -33,7 +33,7 @@ namespace MVCMasterDetailsEntry.Controllers
                             })
                             .ToList();
                 //使用Linq
-                /*r result = (from g in db.Orders
+                /*var result = (from g in db.Orders
                               let details = g.OrderDetails.Select(d => new { ItemName = d.ItemName, Quantity = d.Quantity, Rate = d.Rate, TotalAmount = d.TotalAmount })
                               orderby g.OrderID
                               select new { g.OrderID, g.OrderNo, g.OrderDate, g.Description, details }
@@ -61,29 +61,6 @@ namespace MVCMasterDetailsEntry.Controllers
                                   }).ToList()
                               });*/
                 return Content(JsonConvert.SerializeObject(result), "application/json");
-            }
-        }
-        #endregion
-
-        #region 編輯畫面 +ActionResult Modify(int id)
-        public ActionResult Modify(int id) {
-            using (MyDatabaseEntities db = new MyDatabaseEntities()) {
-                Order order = db.Orders.Where(o => o.OrderID == id).FirstOrDefault();
-                //Order order = (from a in db.Orders where a.OrderID == id select a).FirstOrDefault();
-
-                //使用SQO
-                //var result = db.Orders
-                //            .OrderBy(a => a.OrderID)
-                //            .Select(o => new
-                //            {
-                //                ID = o.OrderID,
-                //                No = o.OrderNo,
-                //                Date = o.OrderDate,
-                //                Description = o.Description,
-                //                OrderDetails = o.OrderDetails.Select(d => new { orderItemID=d.OrderItemsID, itemName = d.ItemName, qty = d.Quantity, rate = d.Rate, TotalAmount = d.TotalAmount })
-                //            })
-                //            .ToList();
-                return View(order);
             }
         }
         #endregion
@@ -128,5 +105,34 @@ namespace MVCMasterDetailsEntry.Controllers
             return new JsonResult { Data = new { status = status } };
         }
         #endregion
+
+        #region 編輯畫面 +ActionResult Modify(int id)
+        public ActionResult Modify(int id) {
+            using (MyDatabaseEntities db = new MyDatabaseEntities()) {
+                //Order o = db.Orders.Where(a => a.OrderID == id).FirstOrDefault();
+                ////Order o = (from a in db.Orders where a.OrderID == id select a).FirstOrDefault();
+                //OrderEditVM ov = new OrderEditVM();
+                //ov.Order = o;
+                //ov.OrderDetail = o.OrderDetails.ToList();
+                ////ov.OrderNo = o.OrderNo;
+                ////ov.OrderDate = o.OrderDate;
+                ////ov.Description = o.Description;
+                ////ov.OrderDetails = o.OrderDetails.ToList().Select( d=> new OrderDetail { OrderItemsID = d.OrderItemsID, ItemName = d.ItemName, Quantity = d.Quantity, Rate = d.Rate }).ToList();
+
+                Order ov = db.Orders.Where(a => a.OrderID == id).ToList()
+                            .Select(o => new Order
+                            {
+                                OrderID = o.OrderID,
+                                OrderNo = o.OrderNo,
+                                OrderDate = o.OrderDate,
+                                Description = o.Description,
+                                //OrderDetails = o.OrderDetails.Select(d => new OrderDetail { ItemName = d.ItemName, Quantity = d.Quantity, Rate = d.Rate, TotalAmount = d.TotalAmount }).ToList()
+                                OrderDetails = o.OrderDetails
+                            }).FirstOrDefault();
+                return View(ov);
+            }
+        }
+        #endregion
+
     }
 }

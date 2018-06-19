@@ -145,6 +145,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\OrderEditVM.cs" />
     <Compile Include="Models\OrderVM.cs" />
     <Compile Include="Models\MyModel.Context.cs">
       <AutoGen>True</AutoGen>
